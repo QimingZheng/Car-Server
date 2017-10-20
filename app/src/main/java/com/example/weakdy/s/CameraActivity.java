@@ -14,6 +14,63 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 
 public class CameraActivity extends Activity implements CamOpenOverCallback {
+    
+    private Camera mCamera;
+	private Context mContext;
+    
+    private SurfaceHolder mHolder;
+    private Camera mCamera;
+    private Size mPreviewSize;
+    private LinkedList<byte[]> mQueue = new LinkedList<byte[]>();
+    private static final int MAX_BUFFER = 15;
+    private byte[] mLastFrame = null;
+    private int mFrameLength;
+    private SoundPool sp;
+    private SoundPool sp2,sp3;
+
+    public CameraActivity(Context context) {
+		mContext = context;
+        mCamera = getCameraInstance();
+	}
+    
+    private static Camera getCameraInstance(){
+	    Camera c = null;
+		try {
+			c = Camera.open();
+		}
+	    catch (Exception e){
+	    }
+	    return c;
+	}
+    
+    public Camera getCamera() {
+		return mCamera;
+	}
+    
+    private void releaseCamera() {
+		if (mCamera != null) {
+			mCamera.release();
+			mCamera = null;
+		}
+	}
+    
+    public CameraPreview(Context context, Camera camera) {
+        super(context);
+        mCamera = camera;
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        mPreviewSize = mCamera.getParameters().getPreviewSize();
+        int format = mCamera.getParameters().getPreviewFormat();
+        mFrameLength = mPreviewSize.width * mPreviewSize.height * ImageFormat.getBitsPerPixel(format) / 8;
+        sp=new SoundPool(10, AudioManager.STREAM_SYSTEM,5);
+        sp.load(context,R.raw.aa,1);
+        sp2=new SoundPool(10, AudioManager.STREAM_SYSTEM,5);
+        sp2.load(context,R.raw.eee,1);
+        sp3=new SoundPool(10, AudioManager.STREAM_SYSTEM,5);
+        sp3.load(context,R.raw.asdasd,1);
+    }
+    
     private static final String TAG = "haha";
     CameraSurfaceView surfaceView = null;
     ImageButton shutterBtn;
